@@ -10,25 +10,28 @@ import ProfileScreen from '../presentation/screens/profile';
 import ScanScreen from '../presentation/screens/scan';
 import ShipmentsScreen from '../presentation/screens/shipments';
 import WalletScreen from '../presentation/screens/wallet';
+import { ThemeProvider } from '../core/theme/ThemeProvider';
 
 const RootStack = createNativeStackNavigator();
 
 const RootNavigator = () => {
   return (
-    <NavigationContainer>
-      <RootStack.Navigator
-        initialRouteName="Splash"
-        screenOptions={{ headerShown: false }}
-      >
-        <RootStack.Screen name="Splash" component={SplashScreen} />
-        <RootStack.Screen name="Login" component={LoginScreen} />
-        <RootStack.Screen name="Tabs" component={TabsScreen} />
-        <RootStack.Screen name="Profile" component={ProfileScreen} />
-        <RootStack.Screen name="Scan" component={ScanScreen} />
-        <RootStack.Screen name="Shipments" component={ShipmentsScreen} />
-        <RootStack.Screen name="Wallet" component={WalletScreen} />
-      </RootStack.Navigator>
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <RootStack.Navigator
+          initialRouteName="Splash"
+          screenOptions={{ headerShown: false }}
+        >
+          <RootStack.Screen name="Splash" component={SplashScreen} />
+          <RootStack.Screen name="Login" component={LoginScreen} />
+          <RootStack.Screen name="Tabs" component={TabsScreen} />
+          <RootStack.Screen name="Profile" component={ProfileScreen} />
+          <RootStack.Screen name="Scan" component={ScanScreen} />
+          <RootStack.Screen name="Shipments" component={ShipmentsScreen} />
+          <RootStack.Screen name="Wallet" component={WalletScreen} />
+        </RootStack.Navigator>
+      </NavigationContainer>
+    </ThemeProvider>
   );
 };
 
