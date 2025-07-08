@@ -11,6 +11,7 @@ import ScanScreen from '../presentation/screens/scan';
 import ShipmentsScreen from '../presentation/screens/shipments';
 import WalletScreen from '../presentation/screens/wallet';
 import { ThemeProvider } from '../core/theme/ThemeProvider';
+import { routes } from './routes';
 
 const RootStack = createNativeStackNavigator();
 
@@ -19,16 +20,23 @@ const RootNavigator = () => {
     <ThemeProvider>
       <NavigationContainer>
         <RootStack.Navigator
-          initialRouteName="Splash"
+          initialRouteName={routes.SPLASH}
           screenOptions={{ headerShown: false }}
         >
-          <RootStack.Screen name="Splash" component={SplashScreen} />
-          <RootStack.Screen name="Login" component={LoginScreen} />
-          <RootStack.Screen name="Tabs" component={TabsScreen} />
-          <RootStack.Screen name="Profile" component={ProfileScreen} />
-          <RootStack.Screen name="Scan" component={ScanScreen} />
-          <RootStack.Screen name="Shipments" component={ShipmentsScreen} />
-          <RootStack.Screen name="Wallet" component={WalletScreen} />
+          <RootStack.Screen name={routes.SPLASH} component={SplashScreen} />
+
+          <RootStack.Screen name={routes.TABS} component={TabsScreen} />
+          <RootStack.Screen name={routes.PROFILE} component={ProfileScreen} />
+          <RootStack.Screen name={routes.SCAN} component={ScanScreen} />
+          <RootStack.Screen
+            name={routes.SHIPMENTS}
+            component={ShipmentsScreen}
+          />
+          <RootStack.Screen name={routes.WALLET} component={WalletScreen} />
+
+          <RootStack.Group screenOptions={{ presentation: 'modal' }}>
+            <RootStack.Screen name={routes.LOGIN} component={LoginScreen} />
+          </RootStack.Group>
         </RootStack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

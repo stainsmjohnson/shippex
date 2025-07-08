@@ -23,7 +23,9 @@ const Button = ({
 
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, style]}
+      onPress={onPress}
+      disabled={disabled || loading}
     >
       <Text style={styles.text}>{title}</Text>
     </Pressable>

@@ -2,8 +2,9 @@ import { View, Animated, useWindowDimensions, Text } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '../../../core/theme/makeStyle';
 import Button from '../../components/Button';
+import { routes } from '../../../navigator/routes';
 
-const SplashScreen = () => {
+const SplashScreen = ({ navigation }) => {
   const window = useWindowDimensions();
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -54,6 +55,10 @@ const SplashScreen = () => {
     outputRange: [1, 5],
     extrapolate: 'clamp',
   });
+
+  const _handleLogin = () => {
+    navigation.navigate(routes.LOGIN);
+  };
 
   return (
     <Animated.View
@@ -119,7 +124,7 @@ const SplashScreen = () => {
         >
           <Text>SHIPPEX</Text>
         </View>
-        <Button title="Login" type="tertiary" />
+        <Button title="Login" type="tertiary" onPress={_handleLogin} />
       </View>
     </Animated.View>
   );
