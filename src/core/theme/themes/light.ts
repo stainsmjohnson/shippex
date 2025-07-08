@@ -1,10 +1,11 @@
 export const lightTheme = {
   colors: {
-    primary: '#4169E1',
-    primaryLight: '#EBF2FF',
-    primaryDark: '#2F50C1',
+    primary: '#2F50C1',
+    primaryLight: '#4169E1',
 
-    background: '#F9FAFB',
+    secondary: '#D9E6FD',
+
+    background: '#FFFFFF',
     cardBackground: '#FFFFFF',
 
     textPrimary: '#1F2937',
@@ -17,9 +18,6 @@ export const lightTheme = {
     warning: '#FACC15',
     error: '#EF4444',
     info: '#3B82F6',
-
-    call: '#3B82F6',
-    whatsapp: '#22C55E',
   },
 
   spacing: {
