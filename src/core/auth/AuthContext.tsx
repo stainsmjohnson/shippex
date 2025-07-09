@@ -1,14 +1,15 @@
 import React from 'react';
 
-type User = {
+export type User = {
   id: number;
   name: string;
+  imageUrl: string | null;
 };
 
 export type AuthContextType = {
   token: string | null; // Token should not be here, should be stored in TokenManager
   initilized: boolean;
-  user: any;
+  user: User | null;
   loading: boolean;
   error: any;
   isLoggedIn: boolean;

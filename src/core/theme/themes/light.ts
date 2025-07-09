@@ -6,7 +6,7 @@ export const lightTheme = {
     secondary: '#D9E6FD',
 
     background: '#FFFFFF',
-    cardBackground: '#FFFFFF',
+    cardBackground: '#F4F2F8',
 
     textPrimary: '#1F2937',
     textSecondary: '#6B7280',

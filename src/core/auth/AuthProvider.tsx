@@ -1,15 +1,11 @@
 import React from 'react';
-import { AuthContext, AuthContextType } from './AuthContext';
-
-type User = {
-  id: number;
-  name: string;
-};
+import { AuthContext, AuthContextType, User } from './AuthContext';
 
 const TempToken = 'uhkdhakjshdakjhsdkjabsdabsjdhajksdbaskd';
 const TempUser: User = {
   id: 1,
   name: 'John Doe',
+  imageUrl: 'https://randomuser.me/api/portraits/women/80.jpg',
 };
 
 //Temp

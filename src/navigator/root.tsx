@@ -6,10 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../presentation/screens/splash';
 import LoginScreen from '../presentation/screens/login';
 import TabsScreen from '../presentation/screens/tabs';
-import ProfileScreen from '../presentation/screens/profile';
-import ScanScreen from '../presentation/screens/scan';
-import ShipmentsScreen from '../presentation/screens/shipments';
-import WalletScreen from '../presentation/screens/wallet';
+
 import { ThemeProvider } from '../core/theme/ThemeProvider';
 import { routes } from './routes';
 import { AuthProvider, useAuth } from '../core/auth';
@@ -45,13 +42,6 @@ const RootNavigator = () => {
         {auth.isLoggedIn ? (
           <RootStack.Group>
             <RootStack.Screen name={routes.TABS} component={TabsScreen} />
-            <RootStack.Screen name={routes.PROFILE} component={ProfileScreen} />
-            <RootStack.Screen name={routes.SCAN} component={ScanScreen} />
-            <RootStack.Screen
-              name={routes.SHIPMENTS}
-              component={ShipmentsScreen}
-            />
-            <RootStack.Screen name={routes.WALLET} component={WalletScreen} />
           </RootStack.Group>
         ) : (
           <>
