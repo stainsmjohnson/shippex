@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { withBottomSheet } from '../../../hoc/bottomSheet';
+import { useShipments } from '../../../hooks';
 
 const LinkButton = ({
   title,
@@ -100,8 +101,26 @@ const SHIPMENT_STATUS = [
   },
 ];
 
-const FilterSheet = ({ onDismiss }: { onDismiss: () => void }) => {
+const FilterSheet = ({
+  visible,
+  onDismiss,
+}: {
+  visible: boolean;
+  onDismiss: () => void;
+}) => {
+  const { setFilter, filters } = useShipments();
   const [selected, setSelected] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (visible) return;
+
+    setSelected(
+      filters.statuses.reduce(
+        (total, current) => ({ ...total, [current]: true }),
+        {},
+      ),
+    );
+  }, [visible, filters.statuses]);
 
   const _handleDone = () => {
     const filtered = Object.entries(selected).reduce<string[]>(
@@ -112,7 +131,7 @@ const FilterSheet = ({ onDismiss }: { onDismiss: () => void }) => {
       [],
     );
 
-    console.log(filtered);
+    setFilter({ statuses: filtered });
     onDismiss();
   };
 

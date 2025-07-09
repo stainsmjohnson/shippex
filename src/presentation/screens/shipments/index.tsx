@@ -10,7 +10,13 @@ import {
   Pressable,
   TouchableOpacity,
 } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useAuth } from '../../../core/auth';
 import { useTheme } from '../../../core/theme';
 import { Checkbox, IconButton, Button, SearchBar } from '../../components';
@@ -22,162 +28,13 @@ import {
   PhoneOutlined,
   FilterOutlined,
   ScanSmallOutlined,
-  SearchOutlined,
 } from '../../../assets/svgs';
 import { ExpandOutlined } from '../../../assets/svgs/Expand';
 import FilterSheet from '../../sheets/filters';
 import { RedirectExternal } from '../../../utils/deeplink';
-
-type ShipmentItemType = {
-  shipmentId: string;
-  label: string;
-  from: string;
-  to: string;
-  status: 'RECEIVED' | 'CANCELED' | 'DELIVERED' | 'ON_HOLD' | 'ERROR';
-};
-
-const dummyShipments: ShipmentItemType[] = [
-  {
-    shipmentId: '41785691423',
-    label: 'AWB',
-    from: 'Cairo',
-    to: 'Alexandria',
-    status: 'RECEIVED',
-  },
-  {
-    shipmentId: '41785691424',
-    label: 'BOL',
-    from: 'Chennai',
-    to: 'Gurgaon',
-    status: 'CANCELED',
-  },
-  {
-    shipmentId: '41785691425',
-    label: 'Consignment Note',
-    from: 'Gurgaon',
-    to: 'Bangalore',
-    status: 'CANCELED',
-  },
-  {
-    shipmentId: '41785691426',
-    label: 'Test',
-    from: 'Kochi',
-    to: 'Bangalore',
-    status: 'CANCELED',
-  },
-  {
-    shipmentId: '41785691427',
-    label: 'Tracking ID',
-    from: 'Delhi',
-    to: 'Mumbai',
-    status: 'DELIVERED',
-  },
-  {
-    shipmentId: '41785691428',
-    label: 'LR Number',
-    from: 'Pune',
-    to: 'Hyderabad',
-    status: 'ON_HOLD',
-  },
-  {
-    shipmentId: '41785691429',
-    label: 'Waybill',
-    from: 'Ahmedabad',
-    to: 'Surat',
-    status: 'RECEIVED',
-  },
-  {
-    shipmentId: '41785691430',
-    label: 'BOL',
-    from: 'Nagpur',
-    to: 'Indore',
-    status: 'ERROR',
-  },
-  {
-    shipmentId: '41785691431',
-    label: 'Dispatch ID',
-    from: 'Trivandrum',
-    to: 'Chennai',
-    status: 'DELIVERED',
-  },
-  {
-    shipmentId: '41785691432',
-    label: 'Courier No.',
-    from: 'Coimbatore',
-    to: 'Bangalore',
-    status: 'RECEIVED',
-  },
-  {
-    shipmentId: '41785691433',
-    label: 'Scan Code',
-    from: 'Lucknow',
-    to: 'Kanpur',
-    status: 'ON_HOLD',
-  },
-  {
-    shipmentId: '41785691434',
-    label: 'Order ID',
-    from: 'Noida',
-    to: 'Delhi',
-    status: 'CANCELED',
-  },
-  {
-    shipmentId: '41785691435',
-    label: 'Package ID',
-    from: 'Raipur',
-    to: 'Bhopal',
-    status: 'ERROR',
-  },
-  {
-    shipmentId: '41785691436',
-    label: 'Delivery Code',
-    from: 'Patna',
-    to: 'Ranchi',
-    status: 'RECEIVED',
-  },
-  {
-    shipmentId: '41785691437',
-    label: 'AWB',
-    from: 'Madurai',
-    to: 'Chennai',
-    status: 'RECEIVED',
-  },
-  {
-    shipmentId: '41785691438',
-    label: 'Tracking ID',
-    from: 'Vijayawada',
-    to: 'Visakhapatnam',
-    status: 'DELIVERED',
-  },
-  {
-    shipmentId: '41785691439',
-    label: 'BOL',
-    from: 'Agra',
-    to: 'Lucknow',
-    status: 'ON_HOLD',
-  },
-  {
-    shipmentId: '41785691440',
-    label: 'Consignment Note',
-    from: 'Jodhpur',
-    to: 'Jaipur',
-    status: 'ERROR',
-  },
-  {
-    shipmentId: '41785691441',
-    label: 'Parcel No.',
-    from: 'Shimla',
-    to: 'Manali',
-    status: 'DELIVERED',
-  },
-  {
-    shipmentId: '41785691442',
-    label: 'Container No.',
-    from: 'Kolkata',
-    to: 'Bhubaneswar',
-    status: 'RECEIVED',
-  },
-];
+import { useShipments } from '../../../hooks';
+import { withShipments } from '../../../hoc/shipment';
+import { ShipmentItemType } from '../../../context';
 
 const Header = React.memo(
   ({ imageUrl, name }: { imageUrl: string | null; name: string | null }) => {
@@ -221,7 +78,17 @@ const Header = React.memo(
 );
 
 const HeaderActions = React.memo(({ onFilter }: { onFilter: () => void }) => {
+  const { setFilter } = useShipments();
+
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    let debounced = setTimeout(() => {
+      setFilter({ query: searchTerm });
+    }, 300);
+
+    return () => clearTimeout(debounced);
+  }, [searchTerm, setFilter]);
 
   return (
     <View style={{ paddingHorizontal: 16 }}>
@@ -377,6 +244,7 @@ const ShipmentItem = React.memo(
     status,
     from,
     to,
+    phone,
     style,
     marked,
     onMark,
@@ -436,7 +304,7 @@ const ShipmentItem = React.memo(
                   fontSize: 13,
                 }}
               >
-                {from}
+                {from.city}
               </Text>
               <ChevronRightOutlined width={7} style={{ marginHorizontal: 8 }} />
               <Text
@@ -445,7 +313,7 @@ const ShipmentItem = React.memo(
                   fontSize: 13,
                 }}
               >
-                {to}
+                {to.city}
               </Text>
             </View>
           </View>
@@ -528,14 +396,14 @@ const ShipmentItem = React.memo(
               >
                 <ShipmentLocation
                   origin
-                  city={'Cairo'}
-                  address={'Dokki, 22 Nile St.'}
+                  city={from.city}
+                  address={from.address}
                 />
                 <ChevronRightOutlined />
                 <ShipmentLocation
                   rightAlign
-                  city={'Alexandria'}
-                  address={'Smoha, 22 max St.'}
+                  city={to.city}
+                  address={to.address}
                 />
               </View>
               <View
@@ -545,7 +413,7 @@ const ShipmentItem = React.memo(
                   title="Call"
                   icon={<PhoneOutlined />}
                   onPress={() => {
-                    RedirectExternal.Dialer('9847927765');
+                    RedirectExternal.Dialer(phone);
                   }}
                 />
                 <CustomButton
@@ -554,10 +422,7 @@ const ShipmentItem = React.memo(
                   color="#25D366"
                   icon={<WhatsappOutlined />}
                   onPress={() => {
-                    RedirectExternal.Whatsapp(
-                      '919847927765',
-                      'Hello, I have a query!',
-                    );
+                    RedirectExternal.Whatsapp(phone, 'Hello, I have a query!');
                   }}
                 />
               </View>
@@ -570,15 +435,16 @@ const ShipmentItem = React.memo(
 );
 
 const Shipments = () => {
+  const { shipments } = useShipments();
   const [markedItems, setMarketItems] = useState<Record<string, boolean>>({});
 
   const isAllMarked = useMemo(() => {
     const markedItemsArr = Object.values(markedItems);
     return (
-      markedItemsArr?.length === dummyShipments?.length &&
+      markedItemsArr?.length === shipments?.length &&
       !Object.values(markedItems).some(selection => selection === false)
     );
-  }, [markedItems]);
+  }, [markedItems, shipments]);
 
   const _renderItem: ListRenderItem<ShipmentItemType> = useCallback(
     ({ item }) => {
@@ -639,7 +505,7 @@ const Shipments = () => {
                 setMarketItems(
                   isAllMarked
                     ? {}
-                    : dummyShipments.reduce((total, current) => {
+                    : shipments.reduce((total, current) => {
                         return {
                           ...total,
                           [current.shipmentId]: true,
@@ -654,27 +520,38 @@ const Shipments = () => {
       }
       contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 14 }}
       keyExtractor={_keyExtractor}
-      data={dummyShipments}
+      data={shipments}
       renderItem={_renderItem}
     />
   );
 };
 
 const ShipmentScreen = () => {
-  const filterSheetRef = useRef<any>(null);
+  const [filterSheetVisible, setFilterSheetVisible] = useState(false);
   const { colors } = useTheme();
   const { user } = useAuth();
+  const { fetch } = useShipments();
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <Header imageUrl={user?.imageUrl ?? null} name={user?.name ?? null} />
-      <HeaderActions onFilter={() => filterSheetRef?.current?.show()} />
+      <HeaderActions onFilter={() => setFilterSheetVisible(true)} />
       <Shipments />
 
-      <FilterSheet ref={filterSheetRef} />
+      <FilterSheet
+        visible={filterSheetVisible}
+        onDismiss={() => {
+          setFilterSheetVisible(false);
+        }}
+      />
     </SafeAreaView>
   );
 };
 
-export default ShipmentScreen;
+export default withShipments(ShipmentScreen);
 
 const styles = StyleSheet.create({});

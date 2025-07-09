@@ -1,10 +1,10 @@
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import React, {
   forwardRef,
   PropsWithChildren,
   useCallback,
   useImperativeHandle,
   ComponentType,
+  useEffect,
 } from 'react';
 
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -20,74 +20,93 @@ interface BottomSheetRef {
   dismiss: () => void;
 }
 
-export const BottomSheet = forwardRef<BottomSheetRef, PropsWithChildren>(
-  ({ children }, ref) => {
-    const tabBarHeight = useBottomTabBarHeight();
-    const isOpen = useSharedValue(false);
-    const height = useSharedValue(0);
-    const progress = useSharedValue(0);
+export const BottomSheet = forwardRef<
+  BottomSheetRef,
+  PropsWithChildren<{ visible: boolean; onDismiss: () => void }>
+>(({ children, visible, onDismiss }, ref) => {
+  const isOpen = useSharedValue(false);
+  const height = useSharedValue(0);
+  const progress = useSharedValue(0);
 
-    const show = useCallback(() => {
-      isOpen.value = true;
+  const show = useCallback(() => {
+    isOpen.value = true;
 
-      progress.value = withTiming(1, { duration: 200 });
-    }, [progress, isOpen]);
+    progress.value = withTiming(1, { duration: 200 });
+  }, [progress, isOpen]);
 
-    const dismiss = useCallback(() => {
-      isOpen.value = false;
+  const dismiss = useCallback(() => {
+    isOpen.value = false;
 
-      progress.value = withTiming(0, { duration: 200 });
-    }, [progress, isOpen]);
+    progress.value = withTiming(0, { duration: 200 });
+  }, [progress, isOpen]);
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        show,
-        dismiss,
-      }),
-      [show, dismiss],
-    );
+  useImperativeHandle(
+    ref,
+    () => ({
+      show,
+      dismiss,
+    }),
+    [show, dismiss],
+  );
 
-    const sheetStyle = useAnimatedStyle(() => ({
-      transform: [{ translateY: (1 - progress.value) * 2 * height.value }],
-    }));
+  useEffect(() => {
+    if (visible) show();
+    else dismiss();
+  }, [visible, show, dismiss]);
 
-    const backdropStyle = useAnimatedStyle(() => ({
-      opacity: progress.value,
-      zIndex: isOpen.value
-        ? 1
-        : withDelay(200, withTiming(-1, { duration: 0 })),
-    }));
+  const sheetStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: (1 - progress.value) * 2 * height.value }],
+  }));
 
-    return (
-      <>
-        <Animated.View style={[styles.backdrop, backdropStyle]}>
-          <TouchableOpacity style={styles.flex} onPress={dismiss} />
-        </Animated.View>
-        <Animated.View
-          onLayout={e => {
-            height.value = e.nativeEvent.layout.height;
-          }}
-          style={[styles.sheet, sheetStyle]}
-        >
-          <View style={styles.handle} />
-          {children}
-        </Animated.View>
-      </>
-    );
-  },
-);
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+    zIndex: isOpen.value ? 1 : withDelay(200, withTiming(-1, { duration: 0 })),
+  }));
+
+  const _handleDismiss = () => {
+    if (onDismiss) {
+      return onDismiss?.();
+    }
+
+    return dismiss();
+  };
+
+  return (
+    <>
+      <Animated.View style={[styles.backdrop, backdropStyle]}>
+        <TouchableOpacity style={styles.flex} onPress={_handleDismiss} />
+      </Animated.View>
+      <Animated.View
+        onLayout={e => {
+          height.value = e.nativeEvent.layout.height;
+        }}
+        style={[styles.sheet, sheetStyle]}
+      >
+        <View style={styles.handle} />
+        {children}
+      </Animated.View>
+    </>
+  );
+});
 
 export const withBottomSheet = <T extends Record<string, any>>(
   Component: ComponentType<T>,
 ) => {
   return forwardRef<BottomSheetRef, T>((props, ref) => {
     const _handleDismiss = () => {
-      ref?.current?.dismiss();
+      if (props.onDismiss) {
+        return props.onDismiss?.();
+      }
+
+      return ref?.current?.dismiss();
     };
 
     return (
-      <BottomSheet ref={ref}>
+      <BottomSheet
+        ref={ref}
+        visible={props?.visible}
+        onDismiss={props.onDismiss}
+      >
         <Component onDismiss={_handleDismiss} {...(props as T)} />
       </BottomSheet>
     );
