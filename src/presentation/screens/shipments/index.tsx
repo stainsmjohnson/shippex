@@ -8,14 +8,22 @@ import {
   ListRenderItem,
   ViewStyle,
   Pressable,
+  TouchableOpacity,
 } from 'react-native';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../../core/auth';
 import { useTheme } from '../../../core/theme';
 import { Checkbox, IconButton, Button, TextBox } from '../../components';
-import { BellOutlined, Logo } from '../../../assets/svgs';
+import {
+  BellOutlined,
+  ChevronRightOutlined,
+  Logo,
+  WhatsappOutlined,
+  PhoneOutlined,
+} from '../../../assets/svgs';
 import { ExpandOutlined } from '../../../assets/svgs/Expand';
 import FilterSheet from '../../sheets/filters';
+import { RedirectExternal } from '../../../utils/deeplink';
 
 type ShipmentItemType = {
   shipmentId: string;
@@ -258,6 +266,49 @@ const ColorMapping = {
   },
 };
 
+const CustomButton = ({
+  title,
+  color = '#6E91EC',
+  icon,
+  onPress,
+  style,
+}: {
+  title: string;
+  color?: string;
+  icon?: React.ReactNode;
+  onPress: () => void;
+  style?: ViewStyle;
+}) => {
+  const hasIcon = icon !== undefined;
+
+  return (
+    <TouchableOpacity
+      style={[
+        {
+          paddingHorizontal: 20,
+          paddingVertical: 8,
+          borderRadius: 10,
+          backgroundColor: color,
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
+        style,
+      ]}
+      onPress={onPress}
+    >
+      {hasIcon ? icon : null}
+      <Text
+        style={{
+          color: '#fff',
+          marginLeft: hasIcon ? 8 : 0,
+        }}
+      >
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
 const ShipmentItem = React.memo(
   ({
     label,
@@ -278,86 +329,164 @@ const ShipmentItem = React.memo(
 
     const { bgColor, textColor } = ColorMapping[status];
     return (
-      <View
-        style={[
-          {
-            flexDirection: 'row',
-            backgroundColor: colors.cardBackground,
-            borderRadius: 10,
-            padding: 12,
-            alignItems: 'center',
-          },
-          style,
-        ]}
-      >
-        <Checkbox checked={marked} onSelect={onMark} />
-        <Image
-          source={require('../../../assets/images/box.png')}
-          style={{ width: 40, height: 40, marginLeft: 14 }}
-          resizeMode="contain"
-        />
-        <View style={{ flex: 1, paddingHorizontal: 14 }}>
-          <Text
-            style={{
-              color: '#3F395C',
-              fontSize: 13,
-            }}
-          >
-            {label}
-          </Text>
-          <Text
-            style={{
-              color: '#000000',
-              fontSize: 18,
-              fontWeight: '600',
-              lineHeight: 24,
-            }}
-          >
-            {shipmentId}
-          </Text>
-          <Text
-            style={{
-              color: '#757281',
-              fontSize: 13,
-            }}
-          >{`${from} -> ${to}`}</Text>
-        </View>
-
+      <View style={[{ borderRadius: 10, overflow: 'hidden' }, style]}>
         <View
-          style={{
-            marginRight: 20,
-            borderWidth: 1,
-            borderRadius: 4,
-            paddingHorizontal: 6,
-            paddingVertical: 4,
-            borderColor: colors.background,
-            backgroundColor: bgColor,
-          }}
+          style={[
+            {
+              flexDirection: 'row',
+              padding: 12,
+              alignItems: 'center',
+              backgroundColor: colors.cardBackground,
+            },
+          ]}
         >
-          <Text
+          <Checkbox checked={marked} onSelect={onMark} />
+          <Image
+            source={require('../../../assets/images/box.png')}
+            style={{ width: 40, height: 40, marginLeft: 14 }}
+            resizeMode="contain"
+          />
+          <View style={{ flex: 1, paddingHorizontal: 14 }}>
+            <Text
+              style={{
+                color: '#3F395C',
+                fontSize: 13,
+              }}
+            >
+              {label}
+            </Text>
+            <Text
+              style={{
+                color: '#000000',
+                fontSize: 18,
+                fontWeight: '600',
+                lineHeight: 24,
+              }}
+            >
+              {shipmentId}
+            </Text>
+            <Text
+              style={{
+                color: '#757281',
+                fontSize: 13,
+              }}
+            >{`${from} -> ${to}`}</Text>
+          </View>
+
+          <View
             style={{
-              color: textColor,
-              fontWeight: '500',
-              fontSize: 11,
+              marginRight: 20,
+              borderWidth: 1,
+              borderRadius: 4,
+              paddingHorizontal: 6,
+              paddingVertical: 4,
+              borderColor: colors.background,
+              backgroundColor: bgColor,
             }}
           >
-            {status?.replace('_', ' ')}
-          </Text>
-        </View>
+            <Text
+              style={{
+                color: textColor,
+                fontWeight: '500',
+                fontSize: 11,
+              }}
+            >
+              {status?.replace('_', ' ')}
+            </Text>
+          </View>
 
-        <Pressable
-          onPress={() => setExpanded(pre => !pre)}
-          style={{
-            backgroundColor: colors.background,
-            width: 24,
-            height: 24,
-            borderRadius: 12,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <ExpandOutlined />
-        </Pressable>
+          <View
+            style={{
+              borderWidth: 2,
+              borderRadius: 200,
+              borderColor: expanded ? '#4561DB40' : 'transparent',
+            }}
+          >
+            <Pressable
+              onPress={() => setExpanded(pre => !pre)}
+              style={{
+                backgroundColor: expanded ? '#6E91EC' : colors.background,
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <ExpandOutlined color={!expanded ? '#4561DB' : '#FFFFFF'} />
+            </Pressable>
+          </View>
+        </View>
+        {expanded && (
+          <>
+            <View
+              style={{
+                height: 2,
+                overflow: 'hidden',
+                backgroundColor: colors.cardBackground,
+              }}
+            >
+              <View
+                style={{
+                  borderStyle: 'dashed',
+                  borderColor: '#FFFFFF',
+                  borderWidth: 2,
+                }}
+              />
+            </View>
+            <View
+              style={{
+                backgroundColor: '#F4F2F880',
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 24,
+                }}
+              >
+                <View>
+                  <Text>Origin</Text>
+                  <Text>Cairo</Text>
+                  <Text>Dokki, 22 Nile St.</Text>
+                </View>
+                <ChevronRightOutlined />
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text>Destination</Text>
+                  <Text>Alexandria</Text>
+                  <Text>Smoha, 22 max St.</Text>
+                </View>
+              </View>
+              <View
+                style={{ flexDirection: 'row', justifyContent: 'flex-end' }}
+              >
+                <CustomButton
+                  title="Call"
+                  icon={<PhoneOutlined />}
+                  onPress={() => {
+                    RedirectExternal.Dialer('9847927765');
+                  }}
+                />
+                <CustomButton
+                  title="Whatsapp"
+                  style={{ marginLeft: 14 }}
+                  color="#25D366"
+                  icon={<WhatsappOutlined />}
+                  onPress={() => {
+                    RedirectExternal.Whatsapp(
+                      '919847927765',
+                      'Hello, I have a query!',
+                    );
+                  }}
+                />
+              </View>
+            </View>
+          </>
+        )}
       </View>
     );
   },

@@ -6,3 +6,6 @@ export * from './Profile';
 export * from './Scan';
 export * from './Shipments';
 export * from './Wallet';
+export * from './ChevronRight';
+export * from './Whatsapp';
+export * from './Phone';
