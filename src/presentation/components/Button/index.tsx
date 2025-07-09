@@ -1,4 +1,4 @@
-import { Pressable, Text } from 'react-native';
+import { ActivityIndicator, Pressable, Text } from 'react-native';
 import React from 'react';
 import { makeStyles } from '../../../core/theme/makeStyle';
 
@@ -19,7 +19,7 @@ const Button = ({
   style,
   loading,
 }: Props) => {
-  const { styles } = useStyles({ type });
+  const { styles, colors } = useStyles({ type });
 
   return (
     <Pressable
@@ -27,7 +27,13 @@ const Button = ({
       onPress={onPress}
       disabled={disabled || loading}
     >
-      <Text style={styles.text}>{title}</Text>
+      {loading ? (
+        <ActivityIndicator
+          color={type === 'primary' ? colors.background : colors.primary}
+        />
+      ) : (
+        <Text style={styles.text}>{title}</Text>
+      )}
     </Pressable>
   );
 };
