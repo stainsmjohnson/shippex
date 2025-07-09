@@ -1,12 +1,21 @@
-import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import React from 'react';
 import Button from '../../components/Button';
 import { routes } from '../../../navigator/routes';
 import { useAuth } from '../../../core/auth';
+import { TextBox } from '../../components';
+import { useTheme } from '../../../core/theme';
 
 const Header = () => {
   return (
-    <View style={{ padding: 20, alignItems: 'center', flexDirection: 'row' }}>
+    <View style={{ alignItems: 'center', flexDirection: 'row' }}>
       <View
         style={{
           width: 20,
@@ -22,13 +31,19 @@ const Header = () => {
 
 const LoginScreen = ({ navigation }) => {
   const auth = useAuth();
+  const { colors } = useTheme();
 
   const _handleLogin = () => {
     auth.login();
   };
 
   return (
-    <View>
+    <SafeAreaView
+      style={{
+        backgroundColor: colors.background,
+        flex: 1,
+      }}
+    >
       {Platform.OS === 'ios' && (
         <View
           style={{
@@ -44,22 +59,26 @@ const LoginScreen = ({ navigation }) => {
 
       <Header />
 
-      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Login</Text>
-      <Text style={{ color: '#A7A3B3', marginTop: 10 }}>
-        Please enter your First, Last name and your phone number in order to
-        register
-      </Text>
+      <View style={{ flex: 1, paddingHorizontal: 16 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Login</Text>
+        <Text style={{ color: '#A7A3B3', marginTop: 10, marginBottom: 6 }}>
+          Please enter your First, Last name and your phone number in order to
+          register
+        </Text>
 
-      <TextInput placeholder="URL" />
-      <TextInput placeholder="Username / Email" />
-      <TextInput placeholder="Password" />
-      <Button
-        title="Login"
-        onPress={_handleLogin}
-        disabled={false}
-        loading={auth.loading}
-      />
-    </View>
+        <TextBox placeholder="URL" style={{ marginTop: 32 }} />
+        <TextBox placeholder="Username / Email" style={{ marginTop: 32 }} />
+        <TextBox placeholder="Password" style={{ marginTop: 32 }} />
+      </View>
+      <View style={{ paddingHorizontal: 16, paddingVertical: 24 }}>
+        <Button
+          title="Login"
+          onPress={_handleLogin}
+          disabled={false}
+          loading={auth.loading}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 

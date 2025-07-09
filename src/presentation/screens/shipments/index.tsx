@@ -3,7 +3,6 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   View,
   FlatList,
   ListRenderItem,
@@ -13,7 +12,7 @@ import {
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAuth } from '../../../core/auth';
 import { useTheme } from '../../../core/theme';
-import { Checkbox, IconButton, Button } from '../../components';
+import { Checkbox, IconButton, Button, TextBox } from '../../components';
 import { BellOutlined, Logo } from '../../../assets/svgs';
 import { ExpandOutlined } from '../../../assets/svgs/Expand';
 
@@ -211,15 +210,12 @@ const Header = React.memo(
 
 const HeaderActions = React.memo(({}: {}) => {
   return (
-    <View>
-      <TextInput
-        placeholder="Search"
-        onChangeText={text => console.log(text)}
-      />
+    <View style={{ paddingHorizontal: 16 }}>
+      <TextBox placeholder="Search" onChangeText={text => console.log(text)} />
       <View
         style={{
           flexDirection: 'row',
-          paddingHorizontal: 16,
+          marginTop: 24,
         }}
       >
         <Button title="Filters" type="secondary" style={{ flex: 1 }} />
