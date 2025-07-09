@@ -7,12 +7,12 @@ import {
   View,
   FlatList,
   ListRenderItem,
+  ViewStyle,
 } from 'react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useAuth } from '../../../core/auth';
-import IconButton from '../../components/IconButton';
-import Button from '../../components/Button';
 import { useTheme } from '../../../core/theme';
+import { Checkbox, IconButton, Button } from '../../components';
 
 type ShipmentItemType = {
   shipmentId: string;
@@ -228,6 +228,29 @@ const HeaderActions = React.memo(({}: {}) => {
   );
 });
 
+const ColorMapping = {
+  CANCELED: {
+    bgColor: '#F4F2F8',
+    textColor: '#58536E',
+  },
+  RECEIVED: {
+    bgColor: '#D9E6FD',
+    textColor: '#2F50C1',
+  },
+  DELIVERED: {
+    bgColor: '#E3FAD6',
+    textColor: '#208D28',
+  },
+  ERROR: {
+    bgColor: '#FEE3D4',
+    textColor: '#D12030',
+  },
+  ON_HOLD: {
+    bgColor: '#FFF3D5',
+    textColor: '#DB7E21',
+  },
+};
+
 const ShipmentItem = React.memo(
   ({
     label,
@@ -235,41 +258,88 @@ const ShipmentItem = React.memo(
     status,
     from,
     to,
-  }: {
-    label: string;
-    shipmentId: string;
-    from: string;
-    to: string;
-    status: string;
+    style,
+    marked,
+    onMark,
+  }: ShipmentItemType & {
+    style: ViewStyle;
+    marked: boolean;
+    onMark: () => void;
   }) => {
-    const theme = useTheme();
+    const { colors } = useTheme();
 
+    const { bgColor, textColor } = ColorMapping[status];
     return (
       <View
-        style={{
-          flexDirection: 'row',
-          backgroundColor: theme.colors.cardBackground,
-        }}
+        style={[
+          {
+            flexDirection: 'row',
+            backgroundColor: colors.cardBackground,
+            borderRadius: 10,
+            padding: 12,
+            alignItems: 'center',
+          },
+          style,
+        ]}
       >
-        {/* checkbox */}
+        <Checkbox checked={marked} onSelect={onMark} />
         <Image
           source={require('../../../assets/images/box.png')}
-          style={{ width: 40, height: 40 }}
+          style={{ width: 40, height: 40, marginLeft: 14 }}
           resizeMode="contain"
         />
-        <View style={{ flex: 1 }}>
-          <Text>{label}</Text>
-          <Text>{shipmentId}</Text>
-          <Text>{`${from} -> ${to}`}</Text>
-        </View>
-
-        <View>
-          <Text>{status}</Text>
+        <View style={{ flex: 1, paddingHorizontal: 14 }}>
+          <Text
+            style={{
+              color: '#3F395C',
+              fontSize: 13,
+            }}
+          >
+            {label}
+          </Text>
+          <Text
+            style={{
+              color: '#000000',
+              fontSize: 18,
+              fontWeight: '600',
+              lineHeight: 24,
+            }}
+          >
+            {shipmentId}
+          </Text>
+          <Text
+            style={{
+              color: '#757281',
+              fontSize: 13,
+            }}
+          >{`${from} -> ${to}`}</Text>
         </View>
 
         <View
           style={{
-            backgroundColor: theme.colors.background,
+            marginRight: 20,
+            borderWidth: 1,
+            borderRadius: 4,
+            paddingHorizontal: 6,
+            paddingVertical: 4,
+            borderColor: colors.background,
+            backgroundColor: bgColor,
+          }}
+        >
+          <Text
+            style={{
+              color: textColor,
+              fontWeight: '500',
+              fontSize: 11,
+            }}
+          >
+            {status?.replace('_', ' ')}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            backgroundColor: colors.background,
             width: 24,
             height: 24,
             borderRadius: 12,
@@ -281,6 +351,16 @@ const ShipmentItem = React.memo(
 );
 
 const Shipments = () => {
+  const [markedItems, setMarketItems] = useState<Record<string, boolean>>({});
+
+  const isAllMarked = useMemo(() => {
+    const markedItemsArr = Object.values(markedItems);
+    return (
+      markedItemsArr?.length === dummyShipments?.length &&
+      !Object.values(markedItems).some(selection => selection === false)
+    );
+  }, [markedItems]);
+
   const _renderItem: ListRenderItem<ShipmentItemType> = useCallback(
     ({ item }) => {
       return (
@@ -290,10 +370,18 @@ const Shipments = () => {
           from={item.from}
           to={item.to}
           status={item.status}
+          style={{ marginBottom: 8 }}
+          marked={markedItems[item.shipmentId]}
+          onMark={() => {
+            setMarketItems(pre => ({
+              ...pre,
+              [item.shipmentId]: !pre?.[item.shipmentId],
+            }));
+          }}
         />
       );
     },
-    [],
+    [markedItems],
   );
 
   const _keyExtractor = useCallback(
@@ -304,6 +392,48 @@ const Shipments = () => {
   return (
     <FlatList<ShipmentItemType>
       style={{ flex: 1 }}
+      stickyHeaderIndices={[0]}
+      ListHeaderComponent={
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 8,
+            paddingVertical: 8,
+            backgroundColor: '#fff',
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: '600',
+              fontSize: 22,
+              color: '#000000',
+            }}
+          >
+            Shipments
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Checkbox
+              checked={isAllMarked}
+              onSelect={() => {
+                setMarketItems(
+                  isAllMarked
+                    ? {}
+                    : dummyShipments.reduce((total, current) => {
+                        return {
+                          ...total,
+                          [current.shipmentId]: true,
+                        };
+                      }, {}),
+                );
+              }}
+              label="Mark All"
+            />
+          </View>
+        </View>
+      }
+      contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 14 }}
       keyExtractor={_keyExtractor}
       data={dummyShipments}
       renderItem={_renderItem}
