@@ -8,6 +8,7 @@ type Props = {
   onPress?: () => void;
   style?: object;
   loading?: boolean;
+  icon: React.ReactElement;
 };
 
 const IconButton = ({
@@ -16,6 +17,7 @@ const IconButton = ({
   onPress,
   style,
   loading,
+  icon,
 }: Props) => {
   const { styles, colors } = useStyles({ type });
 
@@ -30,7 +32,7 @@ const IconButton = ({
           color={type === 'primary' ? colors.background : colors.primary}
         />
       ) : (
-        <Text style={styles.text}></Text>
+        icon
       )}
     </Pressable>
   );

@@ -8,11 +8,14 @@ import {
   FlatList,
   ListRenderItem,
   ViewStyle,
+  Pressable,
 } from 'react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useAuth } from '../../../core/auth';
 import { useTheme } from '../../../core/theme';
 import { Checkbox, IconButton, Button } from '../../components';
+import { BellOutlined, Logo } from '../../../assets/svgs';
+import { ExpandOutlined } from '../../../assets/svgs/Expand';
 
 type ShipmentItemType = {
   shipmentId: string;
@@ -167,6 +170,8 @@ const dummyShipments: ShipmentItemType[] = [
 
 const Header = React.memo(
   ({ imageUrl, name }: { imageUrl: string | null; name: string | null }) => {
+    const { colors } = useTheme();
+
     return (
       <View>
         <View
@@ -189,16 +194,16 @@ const Header = React.memo(
             />
           ) : null}
 
-          <Text style={{ fontSize: 24, fontWeight: 'bold', marginTop: 8 }}>
-            Shippex
-          </Text>
+          <Logo color={colors.primary} width={92} />
 
-          <IconButton type="secondary" />
+          <IconButton type="secondary" icon={<BellOutlined />} />
         </View>
-        <Text>Hello,</Text>
-        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 8 }}>
-          {name ?? 'User'}
-        </Text>
+        <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+          <Text>Hello,</Text>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 8 }}>
+            {name ?? 'User'}
+          </Text>
+        </View>
       </View>
     );
   },
@@ -267,6 +272,7 @@ const ShipmentItem = React.memo(
     onMark: () => void;
   }) => {
     const { colors } = useTheme();
+    const [expanded, setExpanded] = useState(false);
 
     const { bgColor, textColor } = ColorMapping[status];
     return (
@@ -337,14 +343,19 @@ const ShipmentItem = React.memo(
           </Text>
         </View>
 
-        <View
+        <Pressable
+          onPress={() => setExpanded(pre => !pre)}
           style={{
             backgroundColor: colors.background,
             width: 24,
             height: 24,
             borderRadius: 12,
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
-        ></View>
+        >
+          <ExpandOutlined />
+        </Pressable>
       </View>
     );
   },
