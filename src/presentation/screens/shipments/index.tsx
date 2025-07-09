@@ -9,12 +9,13 @@ import {
   ViewStyle,
   Pressable,
 } from 'react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../../core/auth';
 import { useTheme } from '../../../core/theme';
 import { Checkbox, IconButton, Button, TextBox } from '../../components';
 import { BellOutlined, Logo } from '../../../assets/svgs';
 import { ExpandOutlined } from '../../../assets/svgs/Expand';
+import FilterSheet from '../../sheets/filters';
 
 type ShipmentItemType = {
   shipmentId: string;
@@ -208,7 +209,7 @@ const Header = React.memo(
   },
 );
 
-const HeaderActions = React.memo(({}: {}) => {
+const HeaderActions = React.memo(({ onFilter }: { onFilter: () => void }) => {
   return (
     <View style={{ paddingHorizontal: 16 }}>
       <TextBox placeholder="Search" onChangeText={text => console.log(text)} />
@@ -218,7 +219,12 @@ const HeaderActions = React.memo(({}: {}) => {
           marginTop: 24,
         }}
       >
-        <Button title="Filters" type="secondary" style={{ flex: 1 }} />
+        <Button
+          title="Filters"
+          type="secondary"
+          style={{ flex: 1 }}
+          onPress={onFilter}
+        />
         <Button
           title="Add Scan"
           type="primary"
@@ -449,13 +455,16 @@ const Shipments = () => {
 };
 
 const ShipmentScreen = () => {
+  const filterSheetRef = useRef<any>(null);
   const { colors } = useTheme();
   const { user } = useAuth();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <Header imageUrl={user?.imageUrl ?? null} name={user?.name ?? null} />
-      <HeaderActions />
+      <HeaderActions onFilter={() => filterSheetRef?.current?.show()} />
       <Shipments />
+
+      <FilterSheet ref={filterSheetRef} />
     </SafeAreaView>
   );
 };
