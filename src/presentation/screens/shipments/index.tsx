@@ -13,7 +13,7 @@ import {
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../../core/auth';
 import { useTheme } from '../../../core/theme';
-import { Checkbox, IconButton, Button, TextBox } from '../../components';
+import { Checkbox, IconButton, Button, SearchBar } from '../../components';
 import {
   BellOutlined,
   ChevronRightOutlined,
@@ -22,6 +22,7 @@ import {
   PhoneOutlined,
   FilterOutlined,
   ScanSmallOutlined,
+  SearchOutlined,
 } from '../../../assets/svgs';
 import { ExpandOutlined } from '../../../assets/svgs/Expand';
 import FilterSheet from '../../sheets/filters';
@@ -220,9 +221,15 @@ const Header = React.memo(
 );
 
 const HeaderActions = React.memo(({ onFilter }: { onFilter: () => void }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
   return (
     <View style={{ paddingHorizontal: 16 }}>
-      <TextBox placeholder="Search" onChangeText={text => console.log(text)} />
+      <SearchBar
+        value={searchTerm}
+        placeholder="Search"
+        onChangeText={setSearchTerm}
+      />
       <View
         style={{
           flexDirection: 'row',

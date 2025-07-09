@@ -10,3 +10,5 @@ export * from './ChevronRight';
 export * from './Whatsapp';
 export * from './Phone';
 export * from './Filter';
+export * from './Search';
+export * from './Cross';

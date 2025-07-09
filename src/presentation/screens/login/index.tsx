@@ -1,12 +1,5 @@
-import {
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
-import React from 'react';
+import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
 import Button from '../../components/Button';
 import { routes } from '../../../navigator/routes';
 import { useAuth } from '../../../core/auth';
@@ -32,6 +25,10 @@ const Header = () => {
 const LoginScreen = ({ navigation }) => {
   const auth = useAuth();
   const { colors } = useTheme();
+
+  const [url, setUrl] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const _handleLogin = () => {
     auth.login();
@@ -66,9 +63,26 @@ const LoginScreen = ({ navigation }) => {
           register
         </Text>
 
-        <TextBox placeholder="URL" style={{ marginTop: 32 }} />
-        <TextBox placeholder="Username / Email" style={{ marginTop: 32 }} />
-        <TextBox placeholder="Password" style={{ marginTop: 32 }} />
+        <TextBox
+          placeholder="URL"
+          style={{ marginTop: 32 }}
+          value={url}
+          onChangeText={setUrl}
+          prefix="https://"
+        />
+        <TextBox
+          placeholder="Username / Email"
+          style={{ marginTop: 32 }}
+          value={usernameOrEmail}
+          onChangeText={setUsernameOrEmail}
+        />
+        <TextBox
+          placeholder="Password"
+          style={{ marginTop: 32 }}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
       </View>
       <View style={{ paddingHorizontal: 16, paddingVertical: 24 }}>
         <Button
