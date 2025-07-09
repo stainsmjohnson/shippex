@@ -11,3 +11,16 @@ export const ScanOutlined = ({ color }: { color: string }) => {
     </Svg>
   );
 };
+
+export const ScanSmallOutlined = () => {
+  return (
+    <Svg width={22} height={22} viewBox="0 0 22 22" fill="none">
+      <Path
+        d="M8.05 1.4H3.783A2.133 2.133 0 001.65 3.533V7.8m6.4 12.8H3.783a2.133 2.133 0 01-2.133-2.133V14.2m12.8-12.8h4.267c1.178 0 2.133.955 2.133 2.133V7.8m0 6.4v4.267a2.133 2.133 0 01-2.133 2.133H14.45M1.65 11h19.2"
+        stroke="#fff"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+};

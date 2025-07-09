@@ -9,3 +9,4 @@ export * from './Wallet';
 export * from './ChevronRight';
 export * from './Whatsapp';
 export * from './Phone';
+export * from './Filter';

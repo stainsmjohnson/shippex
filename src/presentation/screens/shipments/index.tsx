@@ -20,6 +20,8 @@ import {
   Logo,
   WhatsappOutlined,
   PhoneOutlined,
+  FilterOutlined,
+  ScanSmallOutlined,
 } from '../../../assets/svgs';
 import { ExpandOutlined } from '../../../assets/svgs/Expand';
 import FilterSheet from '../../sheets/filters';
@@ -229,14 +231,18 @@ const HeaderActions = React.memo(({ onFilter }: { onFilter: () => void }) => {
       >
         <Button
           title="Filters"
-          type="secondary"
+          type="gray"
+          size="medium"
           style={{ flex: 1 }}
           onPress={onFilter}
+          icon={<FilterOutlined />}
         />
         <Button
           title="Add Scan"
           type="primary"
+          size="medium"
           style={{ flex: 1, marginLeft: 8 }}
+          icon={<ScanSmallOutlined />}
         />
       </View>
     </View>
@@ -309,6 +315,54 @@ const CustomButton = ({
   );
 };
 
+const ShipmentLocation = ({
+  origin,
+  rightAlign,
+  city,
+  address,
+}: {
+  origin?: boolean;
+  rightAlign?: boolean;
+  city: string;
+  address: string;
+}) => {
+  return (
+    <View style={[{ flex: 1 }, rightAlign && { alignItems: 'flex-end' }]}>
+      <Text
+        numberOfLines={1}
+        style={{
+          fontSize: 11,
+          fontWeight: '400',
+          color: '#2F50C1',
+        }}
+      >
+        {origin ? 'Origin' : 'Destination'}
+      </Text>
+      <Text
+        numberOfLines={1}
+        style={{
+          fontSize: 16,
+          fontWeight: '400',
+          color: '#000000',
+          lineHeight: 22,
+        }}
+      >
+        {city}
+      </Text>
+      <Text
+        numberOfLines={1}
+        style={{
+          fontSize: 13,
+          fontWeight: '300',
+          color: '#58536E',
+        }}
+      >
+        {address}
+      </Text>
+    </View>
+  );
+};
+
 const ShipmentItem = React.memo(
   ({
     label,
@@ -329,7 +383,10 @@ const ShipmentItem = React.memo(
 
     const { bgColor, textColor } = ColorMapping[status];
     return (
-      <View style={[{ borderRadius: 10, overflow: 'hidden' }, style]}>
+      <Pressable
+        style={[{ borderRadius: 10, overflow: 'hidden' }, style]}
+        onPress={() => setExpanded(pre => !pre)}
+      >
         <View
           style={[
             {
@@ -365,12 +422,25 @@ const ShipmentItem = React.memo(
             >
               {shipmentId}
             </Text>
-            <Text
-              style={{
-                color: '#757281',
-                fontSize: 13,
-              }}
-            >{`${from} -> ${to}`}</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <Text
+                style={{
+                  color: '#757281',
+                  fontSize: 13,
+                }}
+              >
+                {from}
+              </Text>
+              <ChevronRightOutlined width={7} style={{ marginHorizontal: 8 }} />
+              <Text
+                style={{
+                  color: '#757281',
+                  fontSize: 13,
+                }}
+              >
+                {to}
+              </Text>
+            </View>
           </View>
 
           <View
@@ -449,17 +519,17 @@ const ShipmentItem = React.memo(
                   marginBottom: 24,
                 }}
               >
-                <View>
-                  <Text>Origin</Text>
-                  <Text>Cairo</Text>
-                  <Text>Dokki, 22 Nile St.</Text>
-                </View>
+                <ShipmentLocation
+                  origin
+                  city={'Cairo'}
+                  address={'Dokki, 22 Nile St.'}
+                />
                 <ChevronRightOutlined />
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text>Destination</Text>
-                  <Text>Alexandria</Text>
-                  <Text>Smoha, 22 max St.</Text>
-                </View>
+                <ShipmentLocation
+                  rightAlign
+                  city={'Alexandria'}
+                  address={'Smoha, 22 max St.'}
+                />
               </View>
               <View
                 style={{ flexDirection: 'row', justifyContent: 'flex-end' }}
@@ -487,7 +557,7 @@ const ShipmentItem = React.memo(
             </View>
           </>
         )}
-      </View>
+      </Pressable>
     );
   },
 );
