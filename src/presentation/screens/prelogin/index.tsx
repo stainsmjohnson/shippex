@@ -1,10 +1,18 @@
-import { Animated, Easing, Text, View } from 'react-native';
+import {
+  Animated,
+  Easing,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import Button from '../../components/Button';
 import { routes } from '../../../navigator/routes';
 import { makeStyles } from '../../../core/theme';
+import { Logo } from '../../../assets/svgs';
 
 const PreLoginScreen = ({ navigation }) => {
+  const dims = useWindowDimensions();
   const animation = useRef(new Animated.Value(0)).current;
 
   const { styles } = useStyles();
@@ -12,7 +20,7 @@ const PreLoginScreen = ({ navigation }) => {
   useEffect(() => {
     Animated.timing(animation, {
       toValue: 1,
-      duration: 300,
+      duration: 200,
       useNativeDriver: true,
       easing: Easing.inOut(Easing.ease),
     }).start();
@@ -50,7 +58,7 @@ const PreLoginScreen = ({ navigation }) => {
             alignItems: 'center',
           }}
         >
-          <Text>SHIPPEX</Text>
+          <Logo width={dims.width * 0.7} />
         </View>
         <Button title="Login" type="tertiary" onPress={_handleLogin} />
       </Animated.View>

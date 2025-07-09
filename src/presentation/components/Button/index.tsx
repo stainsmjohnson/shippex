@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, Text } from 'react-native';
+import { ActivityIndicator, Pressable, Text, ViewStyle } from 'react-native';
 import React from 'react';
 import { makeStyles } from '../../../core/theme/makeStyle';
 
@@ -7,7 +7,7 @@ type Props = {
   type?: 'primary' | 'secondary' | 'tertiary';
   disabled?: boolean;
   onPress?: () => void;
-  style?: object;
+  style?: ViewStyle;
   loading?: boolean;
 };
 

@@ -1,6 +1,7 @@
 import { Animated, useWindowDimensions } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import { makeStyles } from '../../../core/theme/makeStyle';
+import * as LogoParts from './LogoParts';
 
 const SplashScreen = () => {
   const window = useWindowDimensions();
@@ -18,7 +19,7 @@ const SplashScreen = () => {
       Animated.timing(animation, {
         delay: 500,
         toValue: 2,
-        duration: 1000,
+        duration: 500,
         useNativeDriver: true,
       }),
     ]).start();
@@ -26,7 +27,7 @@ const SplashScreen = () => {
 
   const initialScale = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.5, 1.5],
+    outputRange: [1, 2],
     extrapolate: 'clamp',
   });
 
@@ -50,7 +51,7 @@ const SplashScreen = () => {
 
   const bottomScale = animation.interpolate({
     inputRange: [1, 2],
-    outputRange: [1, 5],
+    outputRange: [1, 20],
     extrapolate: 'clamp',
   });
 
@@ -74,28 +75,26 @@ const SplashScreen = () => {
       >
         <Animated.View
           style={{
-            width: 50,
-            height: 50,
-            backgroundColor: colors.primary,
-            transform: [
-              { translateX: topMovement },
-              { translateY: topMovement },
-            ],
-          }}
-        />
-        <Animated.View
-          style={{
-            width: 50,
-            height: 50,
-            backgroundColor: colors.primary,
-            marginTop: 10,
             transform: [
               { translateY: bottomMovement },
               { translateX: bottomTranslationX },
               { scale: bottomScale },
             ],
           }}
-        />
+        >
+          <LogoParts.Upper />
+        </Animated.View>
+        <Animated.View
+          style={{
+            marginTop: 1,
+            transform: [
+              { translateX: topMovement },
+              { translateY: topMovement },
+            ],
+          }}
+        >
+          <LogoParts.Lower />
+        </Animated.View>
       </Animated.View>
     </Animated.View>
   );

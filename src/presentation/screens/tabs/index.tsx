@@ -15,9 +15,9 @@ const TabNavigator = () => {
       screenOptions={{ headerShown: false }}
     >
       <Tab.Screen name={routes.SHIPMENTS} component={ShipmentsScreen} />
-      <Tab.Screen name={routes.PROFILE} component={ProfileScreen} />
       <Tab.Screen name={routes.SCAN} component={ScanScreen} />
       <Tab.Screen name={routes.WALLET} component={WalletScreen} />
+      <Tab.Screen name={routes.PROFILE} component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

@@ -29,8 +29,10 @@ const RootNavigator = () => {
         prefixes: ['https://shippex.com', 'shippex://'],
         // config: {},
         getInitialURL: async () => {
-          const initialUrl = await Linking.getInitialURL();
-          await auth.initialize();
+          const [initialUrl] = await Promise.all([
+            Linking.getInitialURL(),
+            auth.initialize(),
+          ]);
           return initialUrl;
         },
       }}
