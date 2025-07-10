@@ -4,7 +4,6 @@ import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
-import { routes } from '../../../navigator/routes';
 import ProfileScreen from '../profile';
 import ScanScreen from '../scan';
 import ShipmentsScreen from '../shipments';
@@ -16,7 +15,8 @@ import {
   WalletOutlined,
 } from '../../../assets/svgs';
 import { ParamListBase, RouteProp } from '@react-navigation/native';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { routes } from '../../../navigator/routes';
 
 const Tab = createBottomTabNavigator();
 
@@ -34,11 +34,13 @@ const TabBarLabels = {
   [routes.PROFILE]: 'Profile',
 };
 
-const screenOptions: (props: {
+type ScreenOptions = (props: {
   route: RouteProp<ParamListBase, string>;
   navigation: BottomTabNavigationProp<ParamListBase, string, undefined>;
   theme: ReactNavigation.Theme;
-}) => BottomTabNavigationOptions = ({ route }) => ({
+}) => BottomTabNavigationOptions;
+
+const screenOptions: ScreenOptions = ({ route }) => ({
   headerShown: false,
   tabBarIcon: ({ color }: any) => {
     const Icon = TabBarIcons?.[route.name as keyof typeof TabBarIcons];
@@ -46,9 +48,8 @@ const screenOptions: (props: {
   },
   tabBarActiveTintColor: '#2F50C1',
   tabBarInactiveTintColor: '#A7A3B3',
-  tabBarLabelStyle: { fontSize: 11 },
   tabBarLabel: ({ color }) => (
-    <Text style={{ color, fontSize: 11, marginTop: 4 }}>
+    <Text style={[styles.tabLabel, { color }]}>
       {TabBarLabels[route.name as keyof typeof TabBarIcons]}
     </Text>
   ),
@@ -69,3 +70,7 @@ const TabNavigator = () => {
 };
 
 export default TabNavigator;
+
+const styles = StyleSheet.create({
+  tabLabel: { fontSize: 11, marginTop: 4 },
+});

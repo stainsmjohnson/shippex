@@ -1,5 +1,6 @@
 import {
   Animated,
+  StyleProp,
   StyleSheet,
   Text,
   TextInput,
@@ -18,7 +19,7 @@ const TextBox = ({
 }: {
   value: string;
   placeholder: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   onChangeText?: (text: string) => void;
   secureTextEntry?: boolean;
   prefix?: string;
@@ -41,37 +42,27 @@ const TextBox = ({
     setFocused(false);
   }, [setFocused]);
 
+  const opacity = focusAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+
+  const labelTranslateY = focusAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [10, 0],
+  });
+
   return (
-    <View
-      style={[
-        {
-          backgroundColor: '#F4F2F8',
-          paddingHorizontal: 14,
-          borderRadius: 10,
-          height: 56,
-          flexDirection: 'row',
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.container, style]}>
       {!!placeholder && (
         <Animated.Text
-          style={{
-            position: 'absolute',
-            top: 6,
-            left: 14,
-            fontSize: 11,
-            color: '#58536E',
-            opacity: focusAnimation,
-            transform: [
-              {
-                translateY: focusAnimation.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [10, 0],
-                }),
-              },
-            ],
-          }}
+          style={[
+            styles.label,
+            {
+              opacity: focusAnimation,
+              transform: [{ translateY: labelTranslateY }],
+            },
+          ]}
           numberOfLines={1}
         >
           {placeholder}
@@ -79,49 +70,15 @@ const TextBox = ({
       )}
 
       {!!placeholder && (
-        <Animated.View
-          style={{
-            flex: 1,
-            position: 'absolute',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 56,
-            paddingHorizontal: 14,
-            opacity: focusAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [1, 0],
-            }),
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 16,
-              color: '#A7A3B3',
-            }}
-          >
-            {placeholder}
-          </Text>
+        <Animated.View style={[styles.placeholder, { opacity }]}>
+          <Text style={styles.placeholderText}>{placeholder}</Text>
         </Animated.View>
       )}
 
       {!!prefix && !!(focused || value) && (
-        <View
-          style={{
-            top: 22,
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={{ fontSize: 16, color: '#58536E' }}>{'https://'}</Text>
-          <View
-            style={{
-              width: 1,
-              height: 16,
-              backgroundColor: '#15487633',
-              marginHorizontal: 6,
-              top: 2,
-            }}
-          />
+        <View style={styles.prefixContainer}>
+          <Text style={styles.prefix}>{prefix}</Text>
+          <View style={styles.prefixSeparater} />
         </View>
       )}
 
@@ -129,12 +86,7 @@ const TextBox = ({
         onFocus={_handleFocus}
         onBlur={_handleBlur}
         value={value}
-        style={{
-          fontSize: 16,
-          flex: 1,
-          color: '#2F50C1',
-          marginTop: 8,
-        }}
+        style={styles.input}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
       />
@@ -144,4 +96,50 @@ const TextBox = ({
 
 export default TextBox;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#F4F2F8',
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    height: 56,
+    flexDirection: 'row',
+  },
+  input: {
+    fontSize: 16,
+    flex: 1,
+    color: '#2F50C1',
+    marginTop: 8,
+  },
+  label: {
+    position: 'absolute',
+    top: 6,
+    left: 14,
+    fontSize: 11,
+    color: '#58536E',
+  },
+  placeholder: {
+    flex: 1,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 56,
+    paddingHorizontal: 14,
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#A7A3B3',
+  },
+  prefixContainer: {
+    top: 22,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  prefix: { fontSize: 16, color: '#58536E' },
+  prefixSeparater: {
+    width: 1,
+    height: 16,
+    backgroundColor: '#15487633',
+    marginHorizontal: 6,
+    top: 2,
+  },
+});

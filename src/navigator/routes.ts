@@ -1,3 +1,5 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 export const routes = {
   SPLASH: 'SPLASH',
   PRELOGIN: 'PRELOGIN',
@@ -27,3 +29,6 @@ declare global {
     interface RootParamList extends RouteParams {}
   }
 }
+
+export type ScreenProps<RouteName extends keyof ReactNavigation.RootParamList> =
+  NativeStackScreenProps<ReactNavigation.RootParamList, RouteName> | {};

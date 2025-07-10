@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, Text } from 'react-native';
+import { ActivityIndicator, Pressable } from 'react-native';
 import React from 'react';
 import { makeStyles } from '../../../core/theme/makeStyle';
 

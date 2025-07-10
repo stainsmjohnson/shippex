@@ -1,105 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { withBottomSheet } from '../../../hoc/bottomSheet';
 import { useShipments } from '../../../hooks';
-
-const LinkButton = ({
-  title,
-  style,
-  onPress,
-}: {
-  title: string;
-  style?: ViewStyle;
-  onPress: () => void;
-}) => {
-  return (
-    <TouchableOpacity style={[style]} onPress={onPress}>
-      <Text
-        style={{
-          color: '#2F50C1',
-          fontWeight: '500',
-          fontSize: 16,
-          lineHeight: 26,
-        }}
-      >
-        {title}
-      </Text>
-    </TouchableOpacity>
-  );
-};
-
-const Header = ({
-  onCancel,
-  onDone,
-}: {
-  onCancel: () => void;
-  onDone: () => void;
-}) => {
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderColor: '#EAE7F2',
-        justifyContent: 'space-between',
-      }}
-    >
-      <LinkButton
-        title="Cancel"
-        style={{ minWidth: '30%' }}
-        onPress={onCancel}
-      />
-      <Text style={{ fontSize: 18, fontWeight: '600', lineHeight: 26 }}>
-        Filters
-      </Text>
-      <LinkButton
-        title="Done"
-        style={{ minWidth: '30%', alignItems: 'flex-end' }}
-        onPress={onDone}
-      />
-    </View>
-  );
-};
-
-const SHIPMENT_STATUS = [
-  {
-    id: 'RECEIVED',
-    label: 'Received',
-  },
-  {
-    id: 'PUTAWAY',
-    label: 'Putaway',
-  },
-  {
-    id: 'DELIVERED',
-    label: 'Delivered',
-  },
-  {
-    id: 'CANCELED',
-    label: 'Canceled',
-  },
-  {
-    id: 'REJECTED',
-    label: 'Rejected',
-  },
-  {
-    id: 'LOST',
-    label: 'Lost',
-  },
-  {
-    id: 'ON_HOLD',
-    label: 'On Hold',
-  },
-];
+import { Header } from './Header';
+import { SHIPMENT_STATUS } from '../../../core/constants';
 
 const FilterSheet = ({
   visible,
@@ -138,51 +42,27 @@ const FilterSheet = ({
   return (
     <View>
       <Header onCancel={onDismiss} onDone={_handleDone} />
-      <View style={{ paddingHorizontal: 24, paddingVertical: 12 }}>
-        <Text
-          style={{
-            marginBottom: 12,
-            fontWeight: '500',
-            fontSize: 13,
-            lineHeight: 26,
-            color: '#58536E',
-          }}
-        >
-          SHIPMENT STATUS
-        </Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+      <View style={styles.container}>
+        <Text style={styles.label}>SHIPMENT STATUS</Text>
+        <View style={styles.listContainer}>
           {SHIPMENT_STATUS.map(status => {
             const isSelected = selected?.[status.id];
+
+            const _select = () => {
+              setSelected(pre => ({ ...pre, [status.id]: !pre?.[status.id] }));
+            };
+
             return (
               <TouchableOpacity
                 key={status?.id}
+                onPress={_select}
                 style={[
-                  {
-                    borderRadius: 10,
-                    paddingHorizontal: 14,
-                    paddingVertical: 8,
-                    marginRight: 10,
-                    marginBottom: 10,
-                    borderWidth: 2,
-                    backgroundColor: '#F4F2F8',
-                    borderColor: '#F4F2F8',
-                  },
-                  isSelected && {
-                    borderColor: '#6E91EC',
-                  },
+                  styles.chipContainer,
+                  isSelected && styles.activeChipContainer,
                 ]}
-                onPress={() => {
-                  setSelected(pre => ({
-                    ...pre,
-                    [status.id]: !pre?.[status.id],
-                  }));
-                }}
               >
                 <Text
-                  style={{
-                    color: isSelected ? '#2F50C1' : '#58536E',
-                    fontSize: 16,
-                  }}
+                  style={[styles.chipText, isSelected && styles.activeChipText]}
                 >
                   {status?.label}
                 </Text>
@@ -198,43 +78,33 @@ const FilterSheet = ({
 export default withBottomSheet(FilterSheet);
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
+  container: { paddingHorizontal: 24, paddingVertical: 12 },
+  label: {
+    marginBottom: 12,
+    fontWeight: '500',
+    fontSize: 13,
+    lineHeight: 26,
+    color: '#58536E',
   },
-  container: {
-    flex: 1,
-    height: 250,
+  listContainer: { flexDirection: 'row', flexWrap: 'wrap' },
+  chipContainer: {
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginRight: 10,
+    marginBottom: 10,
+    borderWidth: 2,
+    backgroundColor: '#F4F2F8',
+    borderColor: '#F4F2F8',
   },
-  buttonContainer: {
-    marginTop: 16,
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-around',
+  activeChipContainer: {
+    borderColor: '#6E91EC',
   },
-  toggleButton: {
-    backgroundColor: '#b58df1',
-    padding: 12,
-    borderRadius: 48,
+  chipText: {
+    color: '#58536E',
+    fontSize: 16,
   },
-  toggleButtonText: {
-    color: 'white',
-    padding: 5,
-  },
-  safeArea: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  bottomSheetButton: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingBottom: 2,
-  },
-  bottomSheetButtonText: {
-    fontWeight: 600,
-    textDecorationLine: 'underline',
+  activeChipText: {
+    color: '#2F50C1',
   },
 });

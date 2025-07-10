@@ -10,22 +10,14 @@ const ProfileScreen = () => {
     <View style={styles.screen}>
       <View style={styles.container}>
         {!!user?.imageUrl && (
-          <Image
-            source={{ uri: user?.imageUrl }}
-            style={{
-              width: 66,
-              height: 66,
-              borderRadius: 33,
-              marginBottom: 16,
-            }}
-          />
+          <Image source={{ uri: user?.imageUrl }} style={styles.avatar} />
         )}
-        <Text style={{ fontWeight: '600', fontSize: 18 }}>{user?.name}</Text>
+        <Text style={styles.name}>{user?.name}</Text>
       </View>
       <Button
         title="Logout"
         type="secondary"
-        style={{ alignSelf: 'stretch' }}
+        style={styles.cta}
         onPress={logout}
         loading={loading}
       />
@@ -46,4 +38,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  avatar: {
+    width: 66,
+    height: 66,
+    borderRadius: 33,
+    marginBottom: 16,
+  },
+  name: { fontWeight: '600', fontSize: 18 },
+  cta: { alignSelf: 'stretch' },
 });

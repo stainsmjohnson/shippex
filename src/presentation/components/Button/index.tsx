@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Pressable,
+  StyleProp,
   Text,
   TextStyle,
   ViewStyle,
@@ -17,7 +18,7 @@ type Props = {
   size?: ButtonSizes;
   disabled?: boolean;
   onPress?: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   loading?: boolean;
   icon?: React.ReactNode;
 };
@@ -47,7 +48,7 @@ const Button = ({
       ) : (
         <>
           {icon}
-          <Text style={[styles.text, icon !== undefined && { marginLeft: 12 }]}>
+          <Text style={[styles.text, icon !== undefined && styles.ml12]}>
             {title}
           </Text>
         </>
@@ -120,6 +121,7 @@ const useStyles = makeStyles<{ type: ButtonTypes; size: ButtonSizes }>(
         alignItems: 'center',
         backgroundColor: colors.background,
       },
+      ml12: { marginLeft: 12 },
     };
   },
 );

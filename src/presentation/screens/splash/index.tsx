@@ -55,24 +55,15 @@ const SplashScreen = () => {
     extrapolate: 'clamp',
   });
 
+  const backgroundColor = animation.interpolate({
+    inputRange: [0, 1.6, 2],
+    outputRange: [colors.background, colors.background, colors.primary],
+    extrapolate: 'clamp',
+  });
+
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        {
-          backgroundColor: animation.interpolate({
-            inputRange: [0, 1.6, 2],
-            outputRange: [colors.background, colors.background, colors.primary],
-            extrapolate: 'clamp',
-          }),
-        },
-      ]}
-    >
-      <Animated.View
-        style={{
-          transform: [{ scale: initialScale }],
-        }}
-      >
+    <Animated.View style={[styles.container, { backgroundColor }]}>
+      <Animated.View style={{ transform: [{ scale: initialScale }] }}>
         <Animated.View
           style={{
             transform: [
@@ -85,13 +76,15 @@ const SplashScreen = () => {
           <LogoParts.Upper />
         </Animated.View>
         <Animated.View
-          style={{
-            marginTop: 1,
-            transform: [
-              { translateX: topMovement },
-              { translateY: topMovement },
-            ],
-          }}
+          style={[
+            styles.lowerLogo,
+            {
+              transform: [
+                { translateX: topMovement },
+                { translateY: topMovement },
+              ],
+            },
+          ]}
         >
           <LogoParts.Lower />
         </Animated.View>
@@ -113,4 +106,5 @@ const useStyles = makeStyles(({ colors }) => ({
     fontSize: 24,
     fontWeight: 'bold',
   },
+  lowerLogo: { marginTop: 1 },
 }));

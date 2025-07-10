@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useMemo } from 'react';
+import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -22,21 +22,22 @@ const RootNavigator = () => {
     if (!auth.initilized) auth.initialize();
   }, [auth]);
 
+  const linking: LinkingOptions<ReactNavigation.RootParamList> = useMemo(
+    () => ({
+      prefixes: ['https://shippex.com', 'shippex://'],
+      getInitialURL: async () => {
+        const [initialUrl] = await Promise.all([
+          Linking.getInitialURL(),
+          auth.initialize(),
+        ]);
+        return initialUrl;
+      },
+    }),
+    [auth],
+  );
+
   return (
-    <NavigationContainer
-      fallback={<SplashScreen />}
-      linking={{
-        prefixes: ['https://shippex.com', 'shippex://'],
-        // config: {},
-        getInitialURL: async () => {
-          const [initialUrl] = await Promise.all([
-            Linking.getInitialURL(),
-            auth.initialize(),
-          ]);
-          return initialUrl;
-        },
-      }}
-    >
+    <NavigationContainer fallback={<SplashScreen />} linking={linking}>
       <RootStack.Navigator
         initialRouteName={auth.isLoggedIn ? routes.TABS : routes.PRELOGIN}
         screenOptions={{ headerShown: false }}
