@@ -1,28 +1,23 @@
 import React from 'react';
 import { AuthContext, AuthContextType, User } from './AuthContext';
-
-const TempToken = 'uhkdhakjshdakjhsdkjabsdabsjdhajksdbaskd';
-const TempUser: User = {
-  id: 1,
-  name: 'John Doe',
-  imageUrl: 'https://randomuser.me/api/portraits/women/80.jpg',
-};
+import * as AuthService from '../../services/auth';
 
 //Temp
 const SecureStorage = {
-  getItem: (key: string): Promise<string | null> => {
+  getItem: (_key: string): Promise<string | null> => {
     return new Promise(resolve => {
       setTimeout(() => {
-        if (key === 'token') {
-          resolve(TempToken);
-        } else if (key === 'user') {
-          resolve(JSON.stringify(TempUser));
-        } else {
-          resolve(null);
-        }
+        // if (key === 'token') {
+        //   resolve(TempToken);
+        // } else if (key === 'user') {
+        //   resolve(JSON.stringify(TempUser));
+        // } else {
+        resolve(null);
+        // }
       }, 1000);
     });
   },
+  setItem: (_key: string, _value: string) => {},
   multiRemove: (...keys: string[]): void => {
     keys.forEach(key => {
       console.log(`Removed ${key} from secure storage`);
@@ -57,13 +52,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
-  const login = () => {
+  const login = async (
+    url: string,
+    usernameOrEmail: string,
+    password: string,
+  ) => {
     setLoading(true);
-    setTimeout(() => {
-      setUser(TempUser);
-      setIsLoggedIn(true);
+
+    const [failure, data] = await AuthService.login(
+      url,
+      usernameOrEmail,
+      password,
+    );
+
+    if (failure) {
+      setError(failure.message);
       setLoading(false);
-    }, 2000);
+      return;
+    }
+
+    setError(null);
+    setToken(data.token);
+    setUser(data.user);
+    setIsLoggedIn(true);
+    setLoading(false);
+
+    SecureStorage.setItem('user', data.user);
+    SecureStorage.setItem('token', data.token);
   };
 
   const logout = () => {

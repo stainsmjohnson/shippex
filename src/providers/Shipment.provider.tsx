@@ -1,19 +1,21 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   FiltersType,
   ShipmentContext,
   ShipmentContextType,
   ShipmentItemType,
 } from '../context/Shipment.context';
-
-import dummyShipments from '../data/shipments.json';
+import * as ShipmentService from '../services/shipments';
 
 export const ShipmentProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
+  const allShipments = useRef<ShipmentItemType[]>([]);
   const [shipments, setShipments] = useState<ShipmentItemType[]>([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState<FiltersType>({
     query: '',
     statuses: [],
@@ -24,7 +26,7 @@ export const ShipmentProvider = ({
       const allFilters = { ...filters, ...newFilters };
 
       setFilters(allFilters);
-      const filteredShipments = dummyShipments?.filter(shipment => {
+      const filteredShipments = allShipments.current?.filter(shipment => {
         const queryMatch =
           (allFilters.query &&
             shipment.label
@@ -45,8 +47,19 @@ export const ShipmentProvider = ({
     [filters],
   );
 
-  const fetch = useCallback(() => {
-    setShipments(dummyShipments as ShipmentItemType[]);
+  const fetch = useCallback(async () => {
+    setLoading(true);
+    const [failure, data] = await ShipmentService.getShipments();
+
+    if (failure) {
+      setError(failure?.message);
+      setLoading(false);
+      return;
+    }
+
+    allShipments.current = data;
+    setShipments(data as ShipmentItemType[]);
+    setLoading(false);
   }, []);
 
   const value: ShipmentContextType = useMemo(
@@ -55,8 +68,10 @@ export const ShipmentProvider = ({
       filters,
       setFilter,
       fetch,
+      loading,
+      error,
     }),
-    [shipments, filters, setFilter, fetch],
+    [shipments, filters, setFilter, fetch, loading, error],
   );
 
   return (

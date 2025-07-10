@@ -13,7 +13,11 @@ export type AuthContextType = {
   loading: boolean;
   error: any;
   isLoggedIn: boolean;
-  login: () => void;
+  login: (
+    url: string,
+    usernameOrEmail: string,
+    password: string,
+  ) => Promise<void>;
   logout: () => void;
   initialize: () => Promise<User | null>;
 };
@@ -25,7 +29,7 @@ export const AuthContext = React.createContext<AuthContextType>({
   loading: false,
   error: null,
   isLoggedIn: false,
-  login: () => {},
+  login: async () => {},
   logout: () => {},
   initialize: async () => null,
 });

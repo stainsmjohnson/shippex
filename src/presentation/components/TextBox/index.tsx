@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TextInputProps,
   View,
   ViewStyle,
 } from 'react-native';
@@ -17,6 +18,8 @@ const TextBox = ({
   secureTextEntry = false,
   prefix,
   error,
+  keyboardType,
+  autoCapitalize,
 }: {
   value: string;
   placeholder: string;
@@ -25,6 +28,8 @@ const TextBox = ({
   secureTextEntry?: boolean;
   prefix?: string;
   error?: string | null;
+  keyboardType?: TextInputProps['keyboardType'];
+  autoCapitalize?: TextInputProps['autoCapitalize'];
 }) => {
   const [focused, setFocused] = useState(false);
   const focusAnimation = useRef(new Animated.Value(0)).current;
@@ -91,6 +96,8 @@ const TextBox = ({
         style={styles.input}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
       />
       <Text style={styles.error}>{error}</Text>
     </View>

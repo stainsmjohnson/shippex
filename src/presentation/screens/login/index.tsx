@@ -13,6 +13,12 @@ import {
   isValidUsername,
 } from '../../../utils/validations';
 
+type ErrorType = {
+  url: string | null;
+  username: string | null;
+  password: string | null;
+};
+
 const LoginScreen = () => {
   const navigation = useNavigation();
   const auth = useAuth();
@@ -21,11 +27,7 @@ const LoginScreen = () => {
   const [url, setUrl] = useState('');
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{
-    url: string | null;
-    username: string | null;
-    password: string | null;
-  }>({
+  const [errors, setErrors] = useState<ErrorType>({
     url: null,
     username: null,
     password: null,
@@ -44,16 +46,15 @@ const LoginScreen = () => {
   }, [password]);
 
   const _validate = () => {
-    const _errors = { ...errors };
+    let _errors: ErrorType = { url: null, username: null, password: null };
 
-    if (!url || !isValidURL(url)) {
+    if (!url || !isValidURL('https://' + url)) {
       _errors.url = 'Enter valid url!';
     }
 
     if (
       !usernameOrEmail ||
-      !isValidEmail(usernameOrEmail) ||
-      !isValidUsername(usernameOrEmail)
+      !(isValidEmail(usernameOrEmail) || isValidUsername(usernameOrEmail))
     ) {
       _errors.username = 'Enter valid username or email address!';
     }
@@ -70,7 +71,7 @@ const LoginScreen = () => {
     const error = _validate();
     if (error) return;
 
-    auth.login();
+    auth.login(url, usernameOrEmail, password);
   };
 
   return (
@@ -96,6 +97,8 @@ const LoginScreen = () => {
           onChangeText={setUrl}
           prefix="https://"
           error={errors.url}
+          keyboardType="url"
+          autoCapitalize="none"
         />
         <TextBox
           placeholder="Username / Email"
@@ -103,6 +106,8 @@ const LoginScreen = () => {
           value={usernameOrEmail}
           onChangeText={setUsernameOrEmail}
           error={errors.username}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
         <TextBox
           placeholder="Password"
@@ -110,10 +115,12 @@ const LoginScreen = () => {
           value={password}
           onChangeText={setPassword}
           error={errors.password}
+          autoCapitalize="none"
           secureTextEntry
         />
       </View>
       <View style={styles.footer}>
+        <Text style={styles.error}>{auth.error}</Text>
         <Button
           title="Login"
           onPress={_handleLogin}
@@ -145,4 +152,5 @@ const useStyles = makeStyles(({ colors }) => ({
   desc: { color: '#A7A3B3', marginTop: 10, marginBottom: 6 },
   mt32: { marginTop: 32 },
   footer: { paddingHorizontal: 16, paddingVertical: 24 },
+  error: { marginVertical: 12, color: '#EF4444' },
 }));

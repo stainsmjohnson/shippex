@@ -1,6 +1,13 @@
-import { Text, View, FlatList, ListRenderItem, StyleSheet } from 'react-native';
+import {
+  Text,
+  View,
+  FlatList,
+  ListRenderItem,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Checkbox } from '../../components';
+import { Button, Checkbox } from '../../components';
 import { useShipments } from '../../../hooks';
 import { ShipmentItemType } from '../../../context';
 import { ShipmentItem } from './ShipmentItem';
@@ -21,7 +28,7 @@ const ListHeader = ({
 );
 
 export const Shipments = () => {
-  const { shipments } = useShipments();
+  const { shipments, error, loading, fetch, setFilter } = useShipments();
   const [markedItems, setMarkedItems] = useState<Record<string, boolean>>({});
 
   const isAllMarked = useMemo(() => {
@@ -77,6 +84,47 @@ export const Shipments = () => {
     setMarkedItems(_nextMarkedList);
   };
 
+  const _clearFilter = () => {
+    setFilter({ query: '', statuses: [] });
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        {/* Can be updated with content-loaders for better UX */}
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>Couldn't get the shipments</Text>
+        <Button
+          size="medium"
+          title="Try Again?"
+          style={styles.errorCta}
+          onPress={fetch}
+        />
+      </View>
+    );
+  }
+
+  if (shipments.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text>Oops! No results</Text>
+        <Button
+          size="medium"
+          title="Clear Filters?"
+          style={styles.errorCta}
+          onPress={_clearFilter}
+        />
+      </View>
+    );
+  }
+
   return (
     <FlatList<ShipmentItemType>
       style={styles.flex}
@@ -110,4 +158,6 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   listHeaderAction: { flexDirection: 'row', alignItems: 'center' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  errorCta: { paddingHorizontal: 20, marginTop: 20 },
 });

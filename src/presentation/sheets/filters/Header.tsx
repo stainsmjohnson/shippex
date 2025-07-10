@@ -29,6 +29,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   leftAction: { minWidth: '30%' },
-  rightAction: { minWidth: '30%', alignItems: 'flex-end' },
+  rightAction: { minWidth: '30%', justifyContent: 'flex-end' },
   title: { fontSize: 18, fontWeight: '600', lineHeight: 26 },
 });

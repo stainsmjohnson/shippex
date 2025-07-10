@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, SearchBar } from '../../components';
 import { FilterOutlined, ScanSmallOutlined } from '../../../assets/svgs';
 import { useShipments } from '../../../hooks';
+import debounce from 'lodash/debounce';
 
 export const HeaderActions = React.memo(
   ({ onFilter }: { onFilter: () => void }) => {
@@ -10,20 +11,24 @@ export const HeaderActions = React.memo(
 
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-      let debounced = setTimeout(() => {
-        setFilter({ query: searchTerm });
-      }, 300);
+    const _search = useCallback(
+      debounce((term: string) => {
+        setFilter({ query: term });
+      }, 200),
+      [setFilter],
+    );
 
-      return () => clearTimeout(debounced);
-    }, [searchTerm, setFilter]);
+    const _handleSearch = (term: string) => {
+      _search(term);
+      setSearchTerm(term);
+    };
 
     return (
       <View style={styles.container}>
         <SearchBar
           value={searchTerm}
           placeholder="Search"
-          onChangeText={setSearchTerm}
+          onChangeText={_handleSearch}
         />
         <View style={styles.actions}>
           <Button

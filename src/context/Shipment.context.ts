@@ -25,6 +25,8 @@ export type ShipmentContextType = {
   filters: FiltersType;
   setFilter: (filter: Partial<FiltersType>) => void;
   fetch: () => void;
+  loading: boolean;
+  error: string | null;
 };
 
 export const ShipmentContext = React.createContext<ShipmentContextType>({
@@ -32,4 +34,6 @@ export const ShipmentContext = React.createContext<ShipmentContextType>({
   filters: { query: '', statuses: [] },
   setFilter: () => {},
   fetch: () => null,
+  loading: false,
+  error: null,
 });

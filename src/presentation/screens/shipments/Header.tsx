@@ -1,18 +1,27 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../../core/theme';
 import { IconButton } from '../../components';
 import { BellOutlined, Logo } from '../../../assets/svgs';
+import { useNavigation } from '@react-navigation/native';
+import { routes } from '../../../navigator/routes';
 
 export const Header = React.memo(
   ({ imageUrl, name }: { imageUrl: string | null; name: string | null }) => {
+    const navigation = useNavigation();
     const { colors } = useTheme();
+
+    const _showProfile = () => {
+      navigation.navigate(routes.PROFILE);
+    };
 
     return (
       <View>
         <View style={styles.topHeader}>
           {imageUrl ? (
-            <Image source={{ uri: imageUrl }} style={styles.avatar} />
+            <Pressable onPress={_showProfile}>
+              <Image source={{ uri: imageUrl }} style={styles.avatar} />
+            </Pressable>
           ) : null}
           <Logo color={colors.primary} width={92} />
           <IconButton type="secondary" icon={<BellOutlined />} />

@@ -19,7 +19,7 @@ const ShipmentScreen = () => {
 
   useEffect(() => {
     fetch();
-  }, [fetch]);
+  }, []);
 
   const _toggleFilter = () => setFilterSheetVisible(pre => !pre);
 

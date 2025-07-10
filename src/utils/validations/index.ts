@@ -13,6 +13,8 @@ export const isValidEmail = (email: string) => {
 };
 
 export const isValidPassword = (password: string) => {
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
-  return passwordRegex.test(password);
+  // NOTE: can be enabled for better password
+  // const _passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+
+  return password.length >= 6;
 };
