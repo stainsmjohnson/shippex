@@ -16,6 +16,7 @@ const TextBox = ({
   onChangeText,
   secureTextEntry = false,
   prefix,
+  error,
 }: {
   value: string;
   placeholder: string;
@@ -23,6 +24,7 @@ const TextBox = ({
   onChangeText?: (text: string) => void;
   secureTextEntry?: boolean;
   prefix?: string;
+  error?: string | null;
 }) => {
   const [focused, setFocused] = useState(false);
   const focusAnimation = useRef(new Animated.Value(0)).current;
@@ -90,6 +92,7 @@ const TextBox = ({
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
       />
+      <Text style={styles.error}>{error}</Text>
     </View>
   );
 };
@@ -141,5 +144,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#15487633',
     marginHorizontal: 6,
     top: 2,
+  },
+  error: {
+    color: '#EF4444',
+    fontSize: 11,
+    marginHorizontal: 8,
+    marginTop: 4,
+    position: 'absolute',
+    top: '100%',
   },
 });

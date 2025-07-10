@@ -1,11 +1,17 @@
 import { Platform, SafeAreaView, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../../components/Button';
 import { useAuth } from '../../../core/auth';
 import { LinkButton, TextBox } from '../../components';
 import { makeStyles } from '../../../core/theme';
 import { useNavigation } from '@react-navigation/native';
 import { ChevronLeftOutlined } from '../../../assets/svgs';
+import {
+  isValidEmail,
+  isValidPassword,
+  isValidURL,
+  isValidUsername,
+} from '../../../utils/validations';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -15,6 +21,57 @@ const LoginScreen = () => {
   const [url, setUrl] = useState('');
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{
+    url: string | null;
+    username: string | null;
+    password: string | null;
+  }>({
+    url: null,
+    username: null,
+    password: null,
+  });
+
+  useEffect(() => {
+    setErrors(pre => ({ ...pre, url: null }));
+  }, [url]);
+
+  useEffect(() => {
+    setErrors(pre => ({ ...pre, username: null }));
+  }, [usernameOrEmail]);
+
+  useEffect(() => {
+    setErrors(pre => ({ ...pre, password: null }));
+  }, [password]);
+
+  const _validate = () => {
+    const _errors = { ...errors };
+
+    if (!url || !isValidURL(url)) {
+      _errors.url = 'Enter valid url!';
+    }
+
+    if (
+      !usernameOrEmail ||
+      !isValidEmail(usernameOrEmail) ||
+      !isValidUsername(usernameOrEmail)
+    ) {
+      _errors.username = 'Enter valid username or email address!';
+    }
+
+    if (!password || !isValidPassword(password)) {
+      _errors.password = password ? 'Invalid password!' : 'Enter password!';
+    }
+
+    setErrors(_errors);
+    return Object.values(_errors).some(value => !!value);
+  };
+
+  const _handleLogin = () => {
+    const error = _validate();
+    if (error) return;
+
+    auth.login();
+  };
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -38,25 +95,28 @@ const LoginScreen = () => {
           value={url}
           onChangeText={setUrl}
           prefix="https://"
+          error={errors.url}
         />
         <TextBox
           placeholder="Username / Email"
           style={styles.mt32}
           value={usernameOrEmail}
           onChangeText={setUsernameOrEmail}
+          error={errors.username}
         />
         <TextBox
           placeholder="Password"
           style={styles.mt32}
           value={password}
           onChangeText={setPassword}
+          error={errors.password}
           secureTextEntry
         />
       </View>
       <View style={styles.footer}>
         <Button
           title="Login"
-          onPress={auth.login}
+          onPress={_handleLogin}
           disabled={false}
           loading={auth.loading}
         />
